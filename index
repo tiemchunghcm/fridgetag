@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Mô phỏng Fridge-tag – Tập huấn dây chuyền lạnh</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f4f7fb;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .app {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      padding: 20px 24px;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-top: 0;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .display {
+      border-radius: 12px;
+      background: #111;
+      color: #0f0;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .temp-block {
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .temp-value {
+      font-size: 40px;
+      font-weight: 600;
+    }
+
+    .temp-unit {
+      font-size: 16px;
+      opacity: 0.8;
+    }
+
+    .status-block {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .status-label {
+      color: #aaa;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .status-text {
+      margin-bottom: 4px;
+    }
+
+    .alarm {
+      color: #ff5555;
+    }
+
+    .ok-status {
+      color: #7CFC00;
+    }
+
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: #eee;
+    }
+
+    .chip {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      border: 1px solid rgba(255,255,255,0.25);
+      margin-left: 4px;
+    }
+
+    .panel {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      border: 1px solid #e4e7f0;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .panel-desc {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    button {
+      border-radius: 999px;
+      border: 1px solid #d0d4e4;
+      background: #f8f9ff;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
+    }
+
+    button:hover {
+      background: #e6edff;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      border-color: #fecaca;
+      color: #b91c1c;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .legend {
+      font-size: 11px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .badge-alarm {
+      display: inline-block;
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: #fee2e2;
+      color: #b91c1c;
+      margin-left: 6px;
+    }
+
+    .badge-safe {
+      display: inline-block;
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: #dcfce7;
+      color: #166534;
+      margin-left: 6px;
+    }
+
+    .note {
+      font-size: 11px;
+      color: #777;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Mô phỏng Fridge-tag</h1>
+    <div class="subtitle">
+      Dùng cho tập huấn dây chuyền lạnh – nhấn nút, thay đổi nhiệt độ, chờ báo động.
+    </div>
+
+    <!-- Màn hình "Fridge-tag" -->
+    <div class="display" id="display">
+      <div class="temp-block">
+        <div class="temp-value">
+          <span id="tempValue">5.0</span><span class="temp-unit"> °C</span>
+        </div>
+        <div class="time-row">
+          <span>Tổng thời gian: <strong id="totalTime">00:00</strong></span>
+        </div>
+        <div class="time-row">
+          <span>> 8°C: <strong id="highOor">0 phút</strong></span>
+          <span>< 2°C: <strong id="lowOor">0 phút</strong></span>
+        </div>
+      </div>
+      <div class="status-block">
+        <div class="status-label">Trạng thái</div>
+        <div class="status-text" id="statusText">
+          Trong ngưỡng an toàn (2 – 8°C)
+        </div>
+        <div class="status-label">Báo động</div>
+        <div class="status-text" id="alarmText">
+          Không có báo động
+        </div>
+        <div class="status-label">Chế độ mô phỏng</div>
+        <div class="status-text">
+          1 giây = <strong>10 phút</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nút điều khiển giống máy -->
+    <div class="panel">
+      <div class="panel-title">Nút giống trên Fridge-tag</div>
+      <div class="panel-desc">
+        Dùng để cho học viên thực hành đọc màn hình và xử trí báo động.
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" id="btnStartStop">▶ Bắt đầu mô phỏng</button>
+        <button id="btnReset">⟲ Reset</button>
+        <button id="btnTempUp">▲ Tăng 0,5°C</button>
+        <button id="btnTempDown">▼ Giảm 0,5°C</button>
+        <button class="btn-danger" id="btnOk">OK – Xác nhận báo động</button>
+      </div>
+      <div class="note">
+        Gợi ý khi dạy: yêu cầu học viên <strong>ghi lại số đọc</strong>, <strong>thời gian phơi nhiễm</strong>
+        trước khi nhấn nút <strong>OK</strong>.
+      </div>
+    </div>
+
+    <!-- Kịch bản mô phỏng -->
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">
+          Kịch bản 1: Tăng nhiệt > 8°C
+          <span class="badge-alarm">ALARM > 8°C sau 3 giờ</span>
+        </div>
+        <div class="panel-desc">
+          Dùng để minh họa tủ lạnh mất lạnh (cửa mở nhiều, mất điện...). Học viên quan sát thời gian
+          phơi nhiễm và quyết định xử trí vắc xin.
+        </div>
+        <div class="btn-row">
+          <button id="btnScenarioWarm">🔥 Bắt đầu sốc nhiệt (12°C)</button>
+        </div>
+        <div class="legend">
+          Ngưỡng mô phỏng:
+          <ul>
+            <li>Giới hạn trên: <strong>8°C</strong></li>
+            <li>Báo động khi > 8°C liên tục ≥ <strong>3 giờ</strong> (180 phút)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          Kịch bản 2: Đông băng < 2°C
+          <span class="badge-alarm">ALARM < 2°C sau 1 giờ</span>
+        </div>
+        <div class="panel-desc">
+          Mô phỏng tủ lạnh quá lạnh (vắc xin sát dàn lạnh, chỉnh nhiệt độ quá thấp...).
+        </div>
+        <div class="btn-row">
+          <button id="btnScenarioCold">❄ Sốc lạnh (-3°C)</button>
+        </div>
+        <div class="legend">
+          Ngưỡng mô phỏng:
+          <ul>
+            <li>Giới hạn dưới: <strong>2°C</strong></li>
+            <li>Báo động khi < 2°C liên tục ≥ <strong>1 giờ</strong> (60 phút)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      Lưu ý: Đây chỉ là mô phỏng dùng cho tập huấn, <strong>không thay thế thiết bị Fridge-tag thật</strong>.
+      Có thể điều chỉnh ngưỡng và thời gian báo động trong phần JavaScript để phù hợp hướng dẫn quốc gia / hãng sản xuất.
+    </div>
+  </div>
+
+  <script>
+    // Tham số mô phỏng
+    const HIGH_LIMIT = 8.0;            // Giới hạn trên
+    const LOW_LIMIT = 2.0;             // Giới hạn dưới
+    const HIGH_ALARM_THRESHOLD = 180;  // phút > 8°C để báo động (3 giờ)
+    const LOW_ALARM_THRESHOLD = 60;    // phút < 2°C để báo động (1 giờ)
+    const MIN_PER_TICK = 10;           // 1 tick (1 giây thật) = 10 phút mô phỏng
+
+    let currentTemp = 5.0;
+    let totalMinutes = 0;
+    let highOorMinutes = 0;  // out-of-range high
+    let lowOorMinutes = 0;   // out-of-range low
+    let alarmHigh = false;
+    let alarmLow = false;
+    let running = false;
+    let intervalId = null;
+
+    const tempEl = document.getElementById('tempValue');
+    const totalTimeEl = document.getElementById('totalTime');
+    const highOorEl = document.getElementById('highOor');
+    const lowOorEl = document.getElementById('lowOor');
+    const statusTextEl = document.getElementById('statusText');
+    const alarmTextEl = document.getElementById('alarmText');
+    const displayEl = document.getElementById('display');
+    const btnStartStop = document.getElementById('btnStartStop');
+
+    function formatMinutes(min) {
+      const m = Math.floor(min);
+      const hh = Math.floor(m / 60);
+      const mm = m % 60;
+      const pad = (x) => String(x).padStart(2, '0');
+      return `${pad(hh)}:${pad(mm)}`;
+    }
+
+    function updateDisplay() {
+      tempEl.textContent = currentTemp.toFixed(1);
+      totalTimeEl.textContent = formatMinutes(totalMinutes);
+      highOorEl.textContent = `${Math.round(highOorMinutes)} phút`;
+      lowOorEl.textContent = `${Math.round(lowOorMinutes)} phút`;
+
+      // Trạng thái chung
+      if (alarmHigh || alarmLow) {
+        statusTextEl.innerHTML =
+          alarmHigh
+            ? `<span class="alarm">BÁO ĐỘNG: Nhiệt độ cao kéo dài</span>`
+            : `<span class="alarm">BÁO ĐỘNG: Nguy cơ đông băng</span>`;
+        displayEl.style.boxShadow = '0 0 18px rgba(239,68,68,0.8)';
+      } else {
+        if (currentTemp >= LOW_LIMIT && currentTemp <= HIGH_LIMIT) {
+          statusTextEl.innerHTML =
+            `<span class="ok-status">Trong ngưỡng an toàn (2 – 8°C)</span>`;
+        } else if (currentTemp > HIGH_LIMIT) {
+          statusTextEl.innerHTML =
+            `<span class="alarm">Đang trên 8°C – theo dõi sát</span>`;
+        } else {
+          statusTextEl.innerHTML =
+            `<span class="alarm">Đang dưới 2°C – nguy cơ đông băng</span>`;
+        }
+        displayEl.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
+      }
+
+      // Nội dung alarm chi tiết
+      if (alarmHigh) {
+        alarmTextEl.innerHTML =
+          `ALARM HIGH: > 8°C liên tục ≥ 3 giờ<br><span style="color:#aaa;font-size:11px;">Thực hành: cách ly vắc xin, ghi nhận, báo cáo, đánh giá sử dụng tiếp.</span>`;
+      } else if (alarmLow) {
+        alarmTextEl.innerHTML =
+          `ALARM LOW: < 2°C liên tục ≥ 1 giờ<br><span style="color:#aaa;font-size:11px;">Thực hành: kiểm tra nguy cơ đông băng, xử trí theo hướng dẫn.</span>`;
+      } else {
+        alarmTextEl.textContent = 'Không có báo động';
+      }
+    }
+
+    function tick() {
+      // Mỗi tick cộng 10 phút
+      totalMinutes += MIN_PER_TICK;
+
+      // Theo dõi phơi nhiễm
+      if (currentTemp > HIGH_LIMIT) {
+        highOorMinutes += MIN_PER_TICK;
+      } else {
+        highOorMinutes = 0;
+      }
+
+      if (currentTemp < LOW_LIMIT) {
+        lowOorMinutes += MIN_PER_TICK;
+      } else {
+        lowOorMinutes = 0;
+      }
+
+      // Kích hoạt báo động nếu đủ thời gian
+      if (highOorMinutes >= HIGH_ALARM_THRESHOLD) {
+        alarmHigh = true;
+      }
+      if (lowOorMinutes >= LOW_ALARM_THRESHOLD) {
+        alarmLow = true;
+      }
+
+      updateDisplay();
+    }
+
+    function start() {
+      if (running) return;
+      running = true;
+      btnStartStop.textContent = '⏸ Tạm dừng';
+      intervalId = setInterval(tick, 1000); // 1 giây thật
+    }
+
+    function stop() {
+      running = false;
+      btnStartStop.textContent = '▶ Tiếp tục mô phỏng';
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    function resetAll() {
+      stop();
+      currentTemp = 5.0;
+      totalMinutes = 0;
+      highOorMinutes = 0;
+      lowOorMinutes = 0;
+      alarmHigh = false;
+      alarmLow = false;
+      btnStartStop.textContent = '▶ Bắt đầu mô phỏng';
+      updateDisplay();
+    }
+
+    // Gán sự kiện nút
+    btnStartStop.addEventListener('click', () => {
+      if (running) {
+        stop();
+      } else {
+        start();
+      }
+    });
+
+    document.getElementById('btnReset').addEventListener('click', () => {
+      resetAll();
+    });
+
+    document.getElementById('btnTempUp').addEventListener('click', () => {
+      currentTemp += 0.5;
+      updateDisplay();
+    });
+
+    document.getElementById('btnTempDown').addEventListener('click', () => {
+      currentTemp -= 0.5;
+      updateDisplay();
+    });
+
+    document.getElementById('btnOk').addEventListener('click', () => {
+      // Giống nhấn OK: xoá trạng thái báo động nhưng KHÔNG xoá nhiệt độ & tổng thời gian
+      alarmHigh = false;
+      alarmLow = false;
+      highOorMinutes = 0;
+      lowOorMinutes = 0;
+      updateDisplay();
+      alert('Giả định: Anh/chị đã ghi chép và xử trí, sau đó nhấn OK để xác nhận báo động.');
+    });
+
+    // Kịch bản: sốc nhiệt
+    document.getElementById('btnScenarioWarm').addEventListener('click', () => {
+      currentTemp = 12.0;
+      updateDisplay();
+    });
+
+    // Kịch bản: sốc lạnh
+    document.getElementById('btnScenarioCold').addEventListener('click', () => {
+      currentTemp = -3.0;
+      updateDisplay();
+    });
+
+    // Khởi tạo hiển thị
+    updateDisplay();
+  </script>
+</body>
+</html>
