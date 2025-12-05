@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mô phỏng Fridge-Tag 2E (Sửa chức năng kích hoạt lần đầu)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mô phỏng Fridge-Tag 2E (Tối ưu mobile, loại bỏ hướng dẫn)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,13 +14,15 @@
             min-height: 100vh;
             margin: 0;
             flex-direction: column;
-            padding: 20px;
+            padding: 10px;
+            touch-action: manipulation; /* Tối ưu touch trên mobile */
         }
         .device-container {
             position: relative;
-            width: 400px;
-            height: 300px;
-            margin-bottom: 20px;
+            width: 100%;
+            max-width: 350px; /* Responsive cho mobile */
+            height: 250px; /* Tỷ lệ phù hợp */
+            margin-bottom: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             border-radius: 10px;
             overflow: hidden;
@@ -32,7 +34,7 @@
             display: block;
         }
         .device-fallback {
-            background-color: #ffd700; /* 1 màu vàng solid */
+            background-color: #ffd700;
             border: 3px solid #000;
             position: relative;
         }
@@ -44,7 +46,7 @@
             transform: translateX(-50%);
             color: #000;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 10px;
         }
         .screen {
             position: absolute;
@@ -52,12 +54,12 @@
             left: 8%;
             width: 84%;
             height: 38%;
-            background-color: #c0c0c0; /* Xám nhạt giống hình */
-            color: #000000; /* Chữ đen */
+            background-color: #c0c0c0;
+            color: #000000;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-size: 12px; /* Nhỏ hơn cho mobile */
             line-height: 1.1;
-            padding: 6px;
+            padding: 4px;
             border: 1px solid #666;
             overflow: hidden;
             white-space: pre;
@@ -75,20 +77,20 @@
             justify-content: space-between;
         }
         .top-line {
-            font-size: 12px;
-            margin-bottom: 2px;
+            font-size: 10px;
+            margin-bottom: 1px;
             opacity: 0.95;
         }
         .bottom-line {
-            font-size: 16px;
+            font-size: 14px;
             display: flex;
             justify-content: space-between;
             align-items: baseline;
         }
-        .icon-ok { color: #008000; font-size: 18px; margin-right: 5px; }
-        .icon-alarm { color: #ff0000; font-size: 18px; position: absolute; top: 2px; right: 5px; }
-        .arrow-up { color: #ff0000; animation: flash 1s infinite; font-size: 14px; position: absolute; top: 2px; right: 5px; }
-        .arrow-down { color: #ff0000; animation: flash 1s infinite; font-size: 14px; position: absolute; bottom: 2px; right: 5px; }
+        .icon-ok { color: #008000; font-size: 16px; margin-right: 3px; }
+        .icon-alarm { color: #ff0000; font-size: 16px; position: absolute; top: 1px; right: 3px; }
+        .arrow-up { color: #ff0000; animation: flash 1s infinite; font-size: 12px; position: absolute; top: 1px; right: 3px; }
+        .arrow-down { color: #ff0000; animation: flash 1s infinite; font-size: 12px; position: absolute; bottom: 1px; right: 3px; }
         @keyframes flash { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
         .buttons {
             position: absolute;
@@ -97,45 +99,37 @@
             transform: translateX(-50%);
             display: flex;
             justify-content: space-around;
-            width: 60%;
+            width: 70%;
             z-index: 10;
         }
         button {
-            width: 70px;
-            height: 30px;
+            width: 60px; /* Nhỏ hơn cho mobile */
+            height: 25px;
             background-color: rgba(102, 102, 102, 0.8);
             color: white;
             border: none;
             border-radius: 5px;
-            font-size: 14px;
+            font-size: 12px;
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            touch-action: manipulation;
         }
         button:active {
             background-color: #999;
         }
-        .instructions {
-            text-align: left;
-            max-width: 600px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .instructions ul {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
         .hold-indicator {
             color: #ff0;
-            font-size: 16px;
-            margin-top: 10px;
+            font-size: 14px;
+            margin-top: 5px;
             text-align: center;
+            display: none;
         }
         .error-note {
             color: #f00;
-            font-size: 14px;
-            margin-bottom: 10px;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 5px;
+            display: none;
         }
     </style>
 </head>
@@ -150,17 +144,8 @@
             <button id="readBtn">READ</button>
         </div>
     </div>
-    <div id="holdIndicator" class="hold-indicator" style="display: none;">Đang giữ cả hai nút...</div>
-    <div class="error-note" id="errorNote" style="display: none;">Lưu ý: Nếu hình không hiển thị, hãy upload file hình vào cùng thư mục và thay tên src="your-fridge-tag-image.jpg".</div>
-    <div class="instructions">
-        <h3>Hướng dẫn sử dụng mô phỏng Fridge-Tag 2E (Đã sửa kích hoạt lần đầu)</h3>
-        <ul>
-            <li><strong>Sửa kích hoạt:</strong> Bây giờ, để kích hoạt lần đầu (từ trạng thái ngủ - màn hình trống), click SET rồi click READ trong vòng 1 giây (hoặc ngược lại). Màn hình sẽ chuyển sang 'SET DATE' để bắt đầu thiết lập. Nếu giữ chuột >3 giây trên một nút, sẽ vào mode set từ normal. Trước đây logic hold cả hai khó thực hiện trên web, giờ đơn giản hóa để dễ test.</li>
-            <li><strong>Xem nhiệt độ hiện tại & lịch sử:</strong> Màn hình hiển thị nhiệt độ hiện tại với icon OK (V). Nhấn READ ngắn: max hôm nay (▲ nhấp nháy), nhấn tiếp: min hôm nay (▼ nhấp nháy), nhấn tiếp: max ngày -1, nhấn tiếp: min ngày -1, nhấn tiếp: trở về hiện tại.</li>
-            <li><strong>Xem & xử trí cảnh báo:</strong> Nếu có báo động, icon X xuất hiện. Nhấn READ để xem chi tiết (thời gian, nhiệt độ, thời lượng). Giữ READ 3 giây để xem báo động gần nhất. Cảnh báo biến mất sau khi xem.</li>
-            <li><strong>Lưu ý:</strong> Bắt đầu ở trạng thái ngủ (màn hình trống). Ngày hiện tại: 05.12.25. Nhiệt độ giả lập thay đổi nhẹ. Nếu vẫn lỗi, thử refresh và click nhanh hai nút.</li>
-        </ul>
-    </div>
+    <div id="holdIndicator" class="hold-indicator">Đang giữ...</div>
+    <div class="error-note" id="errorNote">Lưu ý: Upload hình nếu cần.</div>
 
     <script>
         class FridgeTagSimulator {
@@ -170,11 +155,12 @@
                 this.readBtn = document.getElementById('readBtn');
                 this.holdIndicator = document.getElementById('holdIndicator');
                 this.errorNote = document.getElementById('errorNote');
-                this.state = 'sleep'; // Bắt đầu ở sleep để test kích hoạt
-                this.lastButtonClick = 0; // Thời gian click nút cuối
-                this.lastButtonType = null; // SET hoặc READ
+                this.state = 'sleep'; // Bắt đầu sleep
+                this.lastButtonClick = 0;
+                this.lastButtonType = null;
                 this.isHolding = false;
                 this.holdStartTime = 0;
+                this.holdType = null;
                 this.dateFormat = 'dd.mm.yyyy';
                 this.currentDate = new Date('2025-12-05T13:47:00');
                 this.currentTemp = 0.56;
@@ -195,15 +181,33 @@
                 this.alarmTemp = 9.1;
                 this.activationStep = 0;
                 this.currentValue = 0;
-                this.readHoldStart = 0;
 
-                // Event cho click và hold
-                this.setBtn.addEventListener('click', () => this.handleButtonClick('SET'));
-                this.readBtn.addEventListener('click', () => this.handleButtonClick('READ'));
-                this.setBtn.addEventListener('mousedown', () => this.startHold('SET'));
-                this.setBtn.addEventListener('mouseup', () => this.endHold('SET'));
-                this.readBtn.addEventListener('mousedown', () => this.startHold('READ'));
-                this.readBtn.addEventListener('mouseup', () => this.endHold('READ'));
+                // Sử dụng touch events cho mobile + click fallback
+                const handleTouchStart = (e, type) => {
+                    e.preventDefault();
+                    this.startHold(type);
+                };
+                const handleTouchEnd = (e, type) => {
+                    e.preventDefault();
+                    this.endHold(type);
+                };
+                const handleClick = (e, type) => {
+                    e.preventDefault();
+                    this.handleButtonClick(type);
+                };
+
+                // Thêm events cho cả mouse và touch
+                this.setBtn.addEventListener('click', (e) => handleClick(e, 'SET'));
+                this.readBtn.addEventListener('click', (e) => handleClick(e, 'READ'));
+                this.setBtn.addEventListener('touchstart', (e) => handleTouchStart(e, 'SET'));
+                this.setBtn.addEventListener('touchend', (e) => handleTouchEnd(e, 'SET'));
+                this.setBtn.addEventListener('mousedown', (e) => handleTouchStart(e, 'SET'));
+                this.setBtn.addEventListener('mouseup', (e) => handleTouchEnd(e, 'SET'));
+                this.readBtn.addEventListener('touchstart', (e) => handleTouchStart(e, 'READ'));
+                this.readBtn.addEventListener('touchend', (e) => handleTouchEnd(e, 'READ'));
+                this.readBtn.addEventListener('mousedown', (e) => handleTouchStart(e, 'READ'));
+                this.readBtn.addEventListener('mouseup', (e) => handleTouchEnd(e, 'READ'));
+
                 this.simulateTemp();
                 this.updateScreen();
                 const img = document.getElementById('deviceImage');
@@ -215,18 +219,20 @@
             handleButtonClick(type) {
                 const now = Date.now();
                 if (this.state === 'sleep') {
-                    // Kích hoạt nếu click hai nút khác nhau trong 1s
-                    if (this.lastButtonType && this.lastButtonType !== type && now - this.lastButtonClick < 1000) {
+                    if (this.lastButtonType && this.lastButtonType !== type && now - this.lastButtonClick < 1500) { // Tăng thời gian cho mobile
                         this.state = 'activating';
                         this.activationStep = 0;
+                        this.holdIndicator.style.display = 'none';
                         this.updateScreen();
                         return;
                     }
                     this.lastButtonClick = now;
                     this.lastButtonType = type;
+                    this.holdIndicator.textContent = `Click ${type === 'SET' ? 'READ' : 'SET'} nhanh để kích hoạt...`;
+                    this.holdIndicator.style.display = 'block';
+                    setTimeout(() => { this.holdIndicator.style.display = 'none'; }, 2000);
                     return;
                 }
-                // Xử lý click ngắn cho các trạng thái khác
                 if (type === 'READ') {
                     this.handleReadShortPress();
                 } else if (type === 'SET') {
@@ -236,21 +242,19 @@
 
             startHold(type) {
                 this.holdStartTime = Date.now();
-                this.isHolding = true;
-                if (type === 'READ') {
-                    this.readHoldStart = this.holdStartTime;
-                }
+                this.holdType = type;
+                this.holdIndicator.style.display = 'block';
+                this.holdIndicator.textContent = `Giữ ${type}...`;
             }
 
             endHold(type) {
-                if (!this.isHolding) return;
+                if (this.holdType !== type) return;
                 const holdDuration = Date.now() - this.holdStartTime;
-                this.isHolding = false;
-                if (holdDuration > 3000) {
+                this.holdIndicator.style.display = 'none';
+                if (holdDuration > 3000 && this.state !== 'sleep') {
                     if (type === 'READ') {
                         this.handleReadHold();
                     } else if (type === 'SET') {
-                        // Hold SET: vào activating nếu normal
                         if (this.state === 'normal') {
                             this.state = 'activating';
                             this.activationStep = 0;
@@ -262,7 +266,6 @@
 
             handleReadShortPress() {
                 if (this.state === 'sleep') {
-                    // Single READ in sleep: test
                     this.screenContent.innerHTML = '<div class="top-line">TEST OK</div>';
                     setTimeout(() => this.updateScreen(), 2000);
                     return;
@@ -393,7 +396,7 @@
                 const tempStr = this.currentTemp.toFixed(2) + '°C';
 
                 if (this.state === 'sleep') {
-                    this.screenContent.innerHTML = ''; // Trống
+                    this.screenContent.innerHTML = '';
                     return;
                 }
 
