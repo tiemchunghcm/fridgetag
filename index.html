@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mô phỏng Fridge-Tag 2E (Sử dụng hình ảnh thực tế, kích thước lớn hơn)</title>
+    <title>Mô phỏng Fridge-Tag 2E (Sửa chức năng kích hoạt lần đầu)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,117 +11,173 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             flex-direction: column;
+            padding: 20px;
         }
         .device-container {
             position: relative;
-            width: 300px; /* Kích thước lớn hơn */
-            height: 200px; /* Kích thước lớn hơn */
+            width: 400px;
+            height: 300px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            overflow: hidden;
         }
         #deviceImage {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: block;
+        }
+        .device-fallback {
+            background-color: #ffd700; /* 1 màu vàng solid */
+            border: 3px solid #000;
+            position: relative;
+        }
+        .device-fallback::before {
+            content: 'Fridge-Tag 2E';
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #000;
+            font-weight: bold;
+            font-size: 12px;
         }
         .screen {
             position: absolute;
-            top: 25%; /* Điều chỉnh vị trí màn hình LCD dựa trên hình ảnh thực tế - chỉnh sửa nếu cần */
-            left: 15%;
-            width: 70%; /* Tăng kích thước màn hình tương ứng */
-            height: 35%;
-            background-color: rgba(0, 0, 0, 0.8); /* Nền đen cho LCD */
-            color: #0f0; /* Màu xanh LCD */
+            top: 20%;
+            left: 8%;
+            width: 84%;
+            height: 38%;
+            background-color: #c0c0c0; /* Xám nhạt giống hình */
+            color: #000000; /* Chữ đen */
             font-family: 'Courier New', monospace;
-            font-size: 12px; /* Tăng font size cho kích thước lớn hơn */
+            font-size: 14px;
             line-height: 1.1;
-            padding: 4px;
-            border: 1px solid #333;
+            padding: 6px;
+            border: 1px solid #666;
             overflow: hidden;
             white-space: pre;
             text-align: left;
-            border-radius: 3px;
+            border-radius: 4px;
             z-index: 10;
+            box-sizing: border-box;
+            text-shadow: none;
         }
-        .icon-ok { position: absolute; bottom: 5px; left: 5px; color: #0f0; font-size: 14px; }
-        .icon-alarm { position: absolute; top: 5px; right: 5px; color: #f00; font-size: 14px; }
-        .arrow-up { color: #f00; animation: flash 1s infinite; position: absolute; top: 5px; right: 5px; font-size: 12px; }
-        .arrow-down { color: #f00; animation: flash 1s infinite; position: absolute; bottom: 5px; right: 5px; font-size: 12px; }
+        .screen-content {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .top-line {
+            font-size: 12px;
+            margin-bottom: 2px;
+            opacity: 0.95;
+        }
+        .bottom-line {
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .icon-ok { color: #008000; font-size: 18px; margin-right: 5px; }
+        .icon-alarm { color: #ff0000; font-size: 18px; position: absolute; top: 2px; right: 5px; }
+        .arrow-up { color: #ff0000; animation: flash 1s infinite; font-size: 14px; position: absolute; top: 2px; right: 5px; }
+        .arrow-down { color: #ff0000; animation: flash 1s infinite; font-size: 14px; position: absolute; bottom: 2px; right: 5px; }
         @keyframes flash { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
         .buttons {
             position: absolute;
-            bottom: 10%;
+            bottom: 15%;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             justify-content: space-around;
-            width: 80%;
+            width: 60%;
+            z-index: 10;
         }
         button {
-            width: 60px; /* Lớn hơn */
-            height: 25px; /* Lớn hơn */
-            background-color: #666;
+            width: 70px;
+            height: 30px;
+            background-color: rgba(102, 102, 102, 0.8);
             color: white;
             border: none;
             border-radius: 5px;
-            font-size: 12px; /* Lớn hơn */
+            font-size: 14px;
             cursor: pointer;
-            position: relative;
-            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         button:active {
             background-color: #999;
         }
         .instructions {
-            text-align: center;
+            text-align: left;
             max-width: 600px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .instructions ul {
+            list-style-type: disc;
+            padding-left: 20px;
         }
         .hold-indicator {
             color: #ff0;
-            font-size: 14px;
+            font-size: 16px;
             margin-top: 10px;
+            text-align: center;
+        }
+        .error-note {
+            color: #f00;
+            font-size: 14px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
     <div class="device-container">
-        <img id="deviceImage" src="fridge-tag-2e-real-image.jpg" alt="Hình ảnh thực tế Fridge-Tag 2E" /> <!-- Thay 'fridge-tag-2e-real-image.jpg' bằng đường dẫn đến hình ảnh bạn gửi -->
-        <div id="screen" class="screen"></div>
+        <img id="deviceImage" src="your-fridge-tag-image.jpg" alt="Hình ảnh Fridge-Tag 2E" onerror="this.style.display='none'; this.parentNode.classList.add('device-fallback');" />
+        <div id="screen" class="screen">
+            <div class="screen-content" id="screenContent"></div>
+        </div>
         <div class="buttons">
             <button id="setBtn">SET</button>
             <button id="readBtn">READ</button>
         </div>
     </div>
     <div id="holdIndicator" class="hold-indicator" style="display: none;">Đang giữ cả hai nút...</div>
+    <div class="error-note" id="errorNote" style="display: none;">Lưu ý: Nếu hình không hiển thị, hãy upload file hình vào cùng thư mục và thay tên src="your-fridge-tag-image.jpg".</div>
     <div class="instructions">
-        <h3>Hướng dẫn sử dụng mô phỏng Fridge-Tag 2E (Với hình ảnh thực tế, kích thước lớn hơn)</h3>
+        <h3>Hướng dẫn sử dụng mô phỏng Fridge-Tag 2E (Đã sửa kích hoạt lần đầu)</h3>
         <ul>
-            <li><strong>Lưu ý về hình ảnh:</strong> Thay thế src của #deviceImage bằng đường dẫn đến file hình ảnh thực tế bạn gửi (ví dụ: upload hình lên và dùng URL hoặc path local). Vị trí màn hình (.screen) có thể cần điều chỉnh top/left để khớp với LCD trên hình.</li>
-            <li><strong>Kích hoạt lần đầu:</strong> Giữ cả hai nút SET và READ đồng thời >3 giây để kích hoạt. Chọn định dạng ngày bằng READ, xác nhận bằng SET. Tiếp tục set ngày/tháng/năm/giờ/phút/giới hạn cao/thấp.</li>
-            <li><strong>Xem nhiệt độ hiện tại & lịch sử:</strong> Màn hình hiển thị nhiệt độ hiện tại với icon OK (V). Nhấn READ: max hôm nay (▲ nhấp nháy), nhấn tiếp: min hôm nay (▼ nhấp nháy), nhấn tiếp: max ngày -1, nhấn tiếp: min ngày -1, nhấn tiếp: trở về hiện tại.</li>
+            <li><strong>Sửa kích hoạt:</strong> Bây giờ, để kích hoạt lần đầu (từ trạng thái ngủ - màn hình trống), click SET rồi click READ trong vòng 1 giây (hoặc ngược lại). Màn hình sẽ chuyển sang 'SET DATE' để bắt đầu thiết lập. Nếu giữ chuột >3 giây trên một nút, sẽ vào mode set từ normal. Trước đây logic hold cả hai khó thực hiện trên web, giờ đơn giản hóa để dễ test.</li>
+            <li><strong>Xem nhiệt độ hiện tại & lịch sử:</strong> Màn hình hiển thị nhiệt độ hiện tại với icon OK (V). Nhấn READ ngắn: max hôm nay (▲ nhấp nháy), nhấn tiếp: min hôm nay (▼ nhấp nháy), nhấn tiếp: max ngày -1, nhấn tiếp: min ngày -1, nhấn tiếp: trở về hiện tại.</li>
             <li><strong>Xem & xử trí cảnh báo:</strong> Nếu có báo động, icon X xuất hiện. Nhấn READ để xem chi tiết (thời gian, nhiệt độ, thời lượng). Giữ READ 3 giây để xem báo động gần nhất. Cảnh báo biến mất sau khi xem.</li>
-            <li>Lưu ý: Mô phỏng dựa trên video demo. Nhiệt độ giả lập thay đổi nhẹ. Ngày hiện tại: 05.12.25. Kích thước thiết bị đã tăng gấp đôi để dễ quan sát hơn.</li>
+            <li><strong>Lưu ý:</strong> Bắt đầu ở trạng thái ngủ (màn hình trống). Ngày hiện tại: 05.12.25. Nhiệt độ giả lập thay đổi nhẹ. Nếu vẫn lỗi, thử refresh và click nhanh hai nút.</li>
         </ul>
     </div>
 
     <script>
-        // Code JavaScript giữ nguyên như phiên bản trước, chỉ điều chỉnh kích thước nếu cần
         class FridgeTagSimulator {
             constructor() {
-                this.screen = document.getElementById('screen');
+                this.screenContent = document.getElementById('screenContent');
                 this.setBtn = document.getElementById('setBtn');
                 this.readBtn = document.getElementById('readBtn');
                 this.holdIndicator = document.getElementById('holdIndicator');
-                this.state = 'sleep';
-                this.isHoldingBoth = false;
+                this.errorNote = document.getElementById('errorNote');
+                this.state = 'sleep'; // Bắt đầu ở sleep để test kích hoạt
+                this.lastButtonClick = 0; // Thời gian click nút cuối
+                this.lastButtonType = null; // SET hoặc READ
+                this.isHolding = false;
                 this.holdStartTime = 0;
                 this.dateFormat = 'dd.mm.yyyy';
-                this.currentDate = new Date('2025-12-05T12:00:00');
-                this.currentTemp = 4.2;
+                this.currentDate = new Date('2025-12-05T13:47:00');
+                this.currentTemp = 0.56;
                 this.todayMax = 5.8;
                 this.todayMaxTime = '00:32';
                 this.todayMin = 2.5;
@@ -139,69 +195,75 @@
                 this.alarmTemp = 9.1;
                 this.activationStep = 0;
                 this.currentValue = 0;
-                this.lastReadPress = 0;
                 this.readHoldStart = 0;
 
-                this.setBtn.addEventListener('mousedown', () => this.startHoldSet());
-                this.setBtn.addEventListener('mouseup', () => this.endHoldSet());
-                this.readBtn.addEventListener('mousedown', () => this.startHoldRead());
-                this.readBtn.addEventListener('mouseup', () => this.endHoldRead());
+                // Event cho click và hold
+                this.setBtn.addEventListener('click', () => this.handleButtonClick('SET'));
+                this.readBtn.addEventListener('click', () => this.handleButtonClick('READ'));
+                this.setBtn.addEventListener('mousedown', () => this.startHold('SET'));
+                this.setBtn.addEventListener('mouseup', () => this.endHold('SET'));
+                this.readBtn.addEventListener('mousedown', () => this.startHold('READ'));
+                this.readBtn.addEventListener('mouseup', () => this.endHold('READ'));
                 this.simulateTemp();
                 this.updateScreen();
+                const img = document.getElementById('deviceImage');
+                img.addEventListener('error', () => {
+                    this.errorNote.style.display = 'block';
+                });
             }
 
-            // Các phương thức khác giữ nguyên như code trước (startHoldSet, endHoldSet, startHoldRead, endHoldRead, activateDevice, handleReadPress, handleReadHold, handleSetPress, confirmActivationStep, adjustActivationStep, updateScreen, simulateTemp, simulateAlarms)
-            startHoldSet() {
-                if (this.readBtn.matches(':active') || Date.now() - this.readHoldStart < 100) {
-                    this.isHoldingBoth = true;
-                    this.holdStartTime = Date.now();
-                    this.holdIndicator.style.display = 'block';
-                }
-            }
-
-            endHoldSet() {
-                if (this.isHoldingBoth && Date.now() - this.holdStartTime > 3000) {
-                    this.activateDevice();
-                }
-                this.isHoldingBoth = false;
-                this.holdIndicator.style.display = 'none';
-            }
-
-            startHoldRead() {
-                this.readHoldStart = Date.now();
-                if (this.setBtn.matches(':active') || Date.now() - this.holdStartTime < 100) {
-                    this.isHoldingBoth = true;
-                    this.holdStartTime = Date.now();
-                    this.holdIndicator.style.display = 'block';
-                }
-            }
-
-            endHoldRead() {
-                const holdDuration = Date.now() - this.readHoldStart;
-                if (this.state !== 'sleep' && holdDuration > 3000) {
-                    this.handleReadHold();
-                } else if (holdDuration < 500) {
-                    this.handleReadPress();
-                }
-                if (this.isHoldingBoth && Date.now() - this.holdStartTime > 3000) {
-                    this.activateDevice();
-                }
-                this.isHoldingBoth = false;
-                this.holdIndicator.style.display = 'none';
-            }
-
-            activateDevice() {
+            handleButtonClick(type) {
+                const now = Date.now();
                 if (this.state === 'sleep') {
-                    this.state = 'activating';
-                    this.activationStep = 0;
-                    this.currentValue = 0;
-                    this.updateScreen();
+                    // Kích hoạt nếu click hai nút khác nhau trong 1s
+                    if (this.lastButtonType && this.lastButtonType !== type && now - this.lastButtonClick < 1000) {
+                        this.state = 'activating';
+                        this.activationStep = 0;
+                        this.updateScreen();
+                        return;
+                    }
+                    this.lastButtonClick = now;
+                    this.lastButtonType = type;
+                    return;
+                }
+                // Xử lý click ngắn cho các trạng thái khác
+                if (type === 'READ') {
+                    this.handleReadShortPress();
+                } else if (type === 'SET') {
+                    this.handleSetShortPress();
                 }
             }
 
-            handleReadPress() {
+            startHold(type) {
+                this.holdStartTime = Date.now();
+                this.isHolding = true;
+                if (type === 'READ') {
+                    this.readHoldStart = this.holdStartTime;
+                }
+            }
+
+            endHold(type) {
+                if (!this.isHolding) return;
+                const holdDuration = Date.now() - this.holdStartTime;
+                this.isHolding = false;
+                if (holdDuration > 3000) {
+                    if (type === 'READ') {
+                        this.handleReadHold();
+                    } else if (type === 'SET') {
+                        // Hold SET: vào activating nếu normal
+                        if (this.state === 'normal') {
+                            this.state = 'activating';
+                            this.activationStep = 0;
+                            this.updateScreen();
+                        }
+                    }
+                }
+            }
+
+            handleReadShortPress() {
                 if (this.state === 'sleep') {
-                    this.screen.textContent = 'TEST OK';
+                    // Single READ in sleep: test
+                    this.screenContent.innerHTML = '<div class="top-line">TEST OK</div>';
                     setTimeout(() => this.updateScreen(), 2000);
                     return;
                 }
@@ -219,6 +281,8 @@
                     this.state = 'normal';
                 } else if (this.state === 'alarm_high' || this.state === 'alarm_low') {
                     this.state += '_detail';
+                    this.alarmHigh = false;
+                    this.alarmLow = false;
                 } else if (this.state.endsWith('_detail')) {
                     this.state = 'normal';
                 }
@@ -232,12 +296,9 @@
                 }
             }
 
-            handleSetPress() {
+            handleSetShortPress() {
                 if (this.state === 'activating') {
                     this.confirmActivationStep();
-                } else if (['normal', 'history_max_today', 'history_min_today', 'history_max_yest', 'history_min_yest'].includes(this.state)) {
-                    this.state = 'activating';
-                    this.activationStep = 0;
                 } else {
                     this.state = 'normal';
                 }
@@ -318,90 +379,107 @@
             }
 
             updateScreen() {
-                let display = '';
-                let iconOK = '';
-                let iconAlarm = '';
-                let arrowUp = '';
-                let arrowDown = '';
+                let topLine = '';
+                let bottomLeft = '';
+                let bottomRight = '';
+                let icon = '';
+                let arrow = '';
                 const day = this.currentDate.getDate().toString().padStart(2, '0');
                 const month = (this.currentDate.getMonth() + 1).toString().padStart(2, '0');
                 const year = this.currentDate.getFullYear().toString().slice(-2);
                 const hours = this.currentDate.getHours().toString().padStart(2, '0');
                 const mins = this.currentDate.getMinutes().toString().padStart(2, '0');
-                const dateStr = this.dateFormat === 'dd.mm.yyyy' ? `${day}.${month}.${year}` : `${month}.${day}.${year}`;
-                const tempStr = this.currentTemp.toFixed(1) + '°C';
+                const dateStr = `${day}.${month}.${year}`;
+                const tempStr = this.currentTemp.toFixed(2) + '°C';
+
+                if (this.state === 'sleep') {
+                    this.screenContent.innerHTML = ''; // Trống
+                    return;
+                }
 
                 switch (this.state) {
-                    case 'sleep':
-                        display = '';
-                        break;
                     case 'activating':
-                        display = 'SET DATE';
-                        if (this.activationStep > 0) {
-                            let label = ['FORMAT:', 'DAY:', 'MONTH:', 'YEAR:', 'HOUR:', 'MIN:', 'HI LIM:', 'LO LIM:'][this.activationStep];
-                            let valStr = this.currentValue.toString().padStart(2, '0');
-                            if (this.activationStep === 0) valStr = this.dateFormat;
-                            if (this.activationStep >= 6) valStr = (this.currentValue / 10).toFixed(1);
-                            display += `\n${label} ${valStr}`;
-                        }
+                        topLine = 'SET DATE';
+                        bottomLeft = ['FORMAT:', 'DAY:', 'MONTH:', 'YEAR:', 'HOUR:', 'MIN:', 'HI LIM:', 'LO LIM:'][this.activationStep] || '';
+                        bottomRight = this.currentValue.toString().padStart(2, '0');
+                        if (this.activationStep >= 6) bottomRight = (this.currentValue / 10).toFixed(1);
                         break;
                     case 'normal':
-                        iconOK = '<span class="icon-ok">V</span>';
+                        topLine = dateStr + ' Int.Sensor';
+                        bottomLeft = hours + ':' + mins;
+                        bottomRight = tempStr;
+                        icon = '<span class="icon-ok">V</span>';
                         if (this.alarmHigh || this.alarmLow) {
-                            iconAlarm = '<span class="icon-alarm">X</span>';
-                            display = 'ALARM ' + (this.alarmHigh ? 'HIGH' : 'LOW');
-                        } else {
-                            display = tempStr;
+                            icon = '<span class="icon-alarm">X</span>';
+                            topLine = 'ALARM ' + (this.alarmHigh ? 'HIGH' : 'LOW');
                         }
-                        display += `\n${hours}:${mins} ${dateStr}`;
                         break;
                     case 'history_max_today':
-                        arrowUp = '<span class="arrow-up">▲</span>';
-                        display = `${this.todayMax.toFixed(1)}°C\n${this.todayMaxTime}`;
+                        topLine = 'TODAY MAX';
+                        bottomLeft = this.todayMax.toFixed(2) + '°C';
+                        bottomRight = this.todayMaxTime;
+                        arrow = '<span class="arrow-up">▲</span>';
                         break;
                     case 'history_min_today':
-                        arrowDown = '<span class="arrow-down">▼</span>';
-                        display = `${this.todayMin.toFixed(1)}°C\n${this.todayMinDur}`;
+                        topLine = 'TODAY MIN';
+                        bottomLeft = this.todayMin.toFixed(2) + '°C';
+                        bottomRight = this.todayMinDur;
+                        arrow = '<span class="arrow-down">▼</span>';
                         break;
                     case 'history_max_yest':
-                        arrowUp = '<span class="arrow-up">▲</span>';
-                        display = `${this.yesterdayMax.toFixed(1)}°C\n${this.yesterdayMaxTime} (-1d)`;
+                        topLine = 'YEST MAX (-1d)';
+                        bottomLeft = this.yesterdayMax.toFixed(2) + '°C';
+                        bottomRight = this.yesterdayMaxTime;
+                        arrow = '<span class="arrow-up">▲</span>';
                         break;
                     case 'history_min_yest':
-                        arrowDown = '<span class="arrow-down">▼</span>';
-                        display = `${this.yesterdayMin.toFixed(1)}°C\n${this.yesterdayMinDur} (-1d)`;
+                        topLine = 'YEST MIN (-1d)';
+                        bottomLeft = this.yesterdayMin.toFixed(2) + '°C';
+                        bottomRight = this.yesterdayMinDur;
+                        arrow = '<span class="arrow-down">▼</span>';
                         break;
                     case 'alarm_high':
                     case 'alarm_low':
-                        iconAlarm = '<span class="icon-alarm">X</span>';
-                        display = 'ALARM ' + this.state.slice(-4).toUpperCase() + '\nMAX/MIN ' + this.alarmTemp.toFixed(1) + ' !';
+                        topLine = 'ALARM ' + (this.state === 'alarm_high' ? 'HIGH' : 'LOW');
+                        bottomLeft = 'MAX/MIN ' + this.alarmTemp.toFixed(2) + ' !';
+                        bottomRight = this.alarmDuration;
+                        icon = '<span class="icon-alarm">X</span>';
                         break;
                     case 'alarm_high_detail':
                     case 'alarm_low_detail':
-                        display = (this.state.includes('high') ? 'HIGH' : 'LOW') + ' ' + this.alarmTime + '\n' + this.alarmTemp.toFixed(1) + '°C\nDUR ' + this.alarmDuration;
+                        topLine = (this.state.includes('high') ? 'HIGH' : 'LOW') + ' ' + this.alarmTime;
+                        bottomLeft = this.alarmTemp.toFixed(2) + '°C';
+                        bottomRight = 'DUR ' + this.alarmDuration;
                         break;
                     case 'recent_alarm':
-                        display = 'RECENT ' + (this.alarmHigh ? 'HIGH' : 'LOW') + '\n' + this.alarmTime + ' ' + this.alarmDuration + '\n' + this.alarmTemp.toFixed(1) + '°C';
+                        topLine = 'RECENT ' + (this.alarmHigh ? 'HIGH' : 'LOW');
+                        bottomLeft = this.alarmTime + ' ' + this.alarmDuration;
+                        bottomRight = this.alarmTemp.toFixed(2) + '°C';
                         break;
                 }
-                this.screen.innerHTML = display + iconOK + iconAlarm + arrowUp + arrowDown;
+                this.screenContent.innerHTML = `
+                    <div class="top-line">${topLine}</div>
+                    <div class="bottom-line">
+                        <span>${icon}${bottomLeft}</span>
+                        <span>${bottomRight}</span>
+                        ${arrow}
+                    </div>
+                `;
             }
 
             simulateTemp() {
                 setInterval(() => {
-                    this.currentTemp += (Math.random() - 0.5) * 0.5;
-                    this.currentTemp = Math.max(-10, Math.min(55, this.currentTemp));
-                    if (Math.random() > 0.7) {
+                    this.currentTemp += (Math.random() - 0.5) * 0.1;
+                    this.currentTemp = Math.max(0, Math.min(10, this.currentTemp));
+                    if (Math.random() > 0.8) {
                         this.todayMax = Math.max(this.todayMax, this.currentTemp);
-                        this.todayMaxTime = `${Math.floor(Math.random()*60).toString().padStart(2,'0')}:00`;
                     }
-                    if (Math.random() > 0.7) {
+                    if (Math.random() > 0.8) {
                         this.todayMin = Math.min(this.todayMin, this.currentTemp);
-                        this.todayMinDur = `${Math.floor(Math.random()*2)}:${Math.floor(Math.random()*60).toString().padStart(2,'0')}`;
                     }
                     this.simulateAlarms();
                     if (this.state === 'normal') this.updateScreen();
-                }, 30000);
+                }, 10000);
             }
 
             simulateAlarms() {
@@ -409,13 +487,7 @@
                 this.alarmLow = this.todayMin < this.lowLimit;
                 if ((this.alarmHigh || this.alarmLow) && this.state === 'normal') {
                     this.state = this.alarmHigh ? 'alarm_high' : 'alarm_low';
-                    if (this.alarmHigh) {
-                        this.alarmTemp = this.todayMax;
-                        this.alarmDuration = this.todayMaxTime;
-                    } else {
-                        this.alarmTemp = this.todayMin;
-                        this.alarmDuration = this.todayMinDur;
-                    }
+                    this.updateScreen();
                 }
             }
         }
