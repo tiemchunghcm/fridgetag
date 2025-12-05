@@ -1,163 +1,262 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Mô phỏng Fridge-tag – Tập huấn dây chuyền lạnh</title>
+  <meta charset="UTF-8" />
+  <title>Mô phỏng Fridge-tag 2E – Dây chuyền lạnh</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f4f7fb;
+      background: #eef3ff;
+      margin: 0;
+      padding: 16px;
       display: flex;
       justify-content: center;
-      padding: 20px;
     }
-
     .app {
       background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      padding: 20px 24px;
-      max-width: 600px;
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+      padding: 20px 24px 24px;
+      max-width: 780px;
       width: 100%;
     }
-
     h1 {
-      font-size: 20px;
-      margin-top: 0;
-      margin-bottom: 8px;
+      margin: 0 0 4px;
+      font-size: 22px;
       text-align: center;
     }
-
     .subtitle {
       text-align: center;
       font-size: 13px;
-      color: #666;
+      color: #6b7280;
       margin-bottom: 16px;
     }
-
-    .display {
-      border-radius: 12px;
-      background: #111;
-      color: #0f0;
-      padding: 16px;
-      display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .temp-block {
+    .tag-line {
       text-align: center;
-      border-right: 1px solid rgba(255,255,255,0.1);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9ca3af;
+      margin-bottom: 12px;
     }
 
+    /* Vùng mô phỏng thiết bị */
+    .device {
+      background: #111827;
+      border-radius: 18px;
+      padding: 16px 18px;
+      color: #e5e7eb;
+      display: grid;
+      grid-template-columns: 1.5fr 1.2fr;
+      gap: 14px;
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .device.beating {
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.85);
+    }
+    .device-main {
+      border-right: 1px solid rgba(156, 163, 175, 0.3);
+      padding-right: 12px;
+    }
+    .device-side {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .screen-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+    .screen-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .temp-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
     .temp-value {
-      font-size: 40px;
+      font-size: 42px;
       font-weight: 600;
     }
-
     .temp-unit {
       font-size: 16px;
       opacity: 0.8;
     }
-
-    .status-block {
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-size: 13px;
-      line-height: 1.5;
+      margin-bottom: 8px;
     }
-
-    .status-label {
-      color: #aaa;
+    .status-chip {
+      border-radius: 999px;
+      padding: 2px 9px;
       font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .06em;
+      font-weight: 600;
+      border: 1px solid;
     }
-
-    .status-text {
+    .status-ok {
+      background: #16a34a22;
+      border-color: #22c55e;
+      color: #bbf7d0;
+    }
+    .status-alarm {
+      background: #b91c1c22;
+      border-color: #f87171;
+      color: #fecaca;
+    }
+    .status-muted {
+      background: #4b556322;
+      border-color: #9ca3af;
+      color: #d1d5db;
+    }
+    .time-line {
+      font-size: 11px;
+      color: #d1d5db;
       margin-bottom: 4px;
-    }
-
-    .alarm {
-      color: #ff5555;
-    }
-
-    .ok-status {
-      color: #7CFC00;
-    }
-
-    .time-row {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
-      margin-bottom: 6px;
-      color: #eee;
+      gap: 6px;
+    }
+    .time-line span strong {
+      color: #f9fafb;
     }
 
-    .chip {
+    .side-section {
+      margin-bottom: 6px;
+    }
+    .side-label {
       font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #9ca3af;
+      margin-bottom: 2px;
+    }
+    .side-text {
+      font-size: 12px;
+      color: #e5e7eb;
+    }
+    .side-text small {
+      color: #9ca3af;
+      font-size: 11px;
+    }
+
+    .badge {
+      display: inline-block;
       border-radius: 999px;
       padding: 2px 8px;
-      border: 1px solid rgba(255,255,255,0.25);
-      margin-left: 4px;
+      font-size: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      margin-left: 6px;
     }
 
-    .panel {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-      border: 1px solid #e4e7f0;
+    /* Overlay kích hoạt */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      padding: 12px;
+      text-align: center;
     }
-
-    .panel-title {
-      font-size: 13px;
+    .overlay-title {
+      font-size: 14px;
       font-weight: 600;
       margin-bottom: 6px;
     }
-
-    .panel-desc {
+    .overlay-text {
       font-size: 12px;
-      color: #666;
+      color: #d1d5db;
+      margin-bottom: 10px;
+    }
+    .overlay-options {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
       margin-bottom: 8px;
     }
+    .overlay button {
+      background: #1f2937;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      color: #f9fafb;
+      font-size: 12px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .overlay button:hover {
+      background: #374151;
+    }
 
+    /* Panel điều khiển */
+    .panel {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 10px;
+    }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .panel-desc {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
     .btn-row {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 4px;
     }
-
     button {
       border-radius: 999px;
-      border: 1px solid #d0d4e4;
-      background: #f8f9ff;
+      border: 1px solid #cbd5f5;
+      background: #edf2ff;
       padding: 6px 12px;
       font-size: 12px;
       cursor: pointer;
       transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
     }
-
     button:hover {
-      background: #e6edff;
+      background: #dbe4ff;
     }
-
     button:active {
       transform: translateY(1px);
       box-shadow: none;
     }
-
     .btn-primary {
       background: #2563eb;
       color: white;
       border-color: #2563eb;
     }
-
     .btn-primary:hover {
       background: #1d4ed8;
     }
-
+    .btn-warning {
+      background: #fef3c7;
+      border-color: #facc15;
+      color: #92400e;
+    }
     .btn-danger {
       background: #fee2e2;
       border-color: #fecaca;
@@ -170,177 +269,424 @@
       gap: 10px;
     }
 
-    .legend {
-      font-size: 11px;
-      color: #555;
-      line-height: 1.5;
-    }
-
-    .badge-alarm {
-      display: inline-block;
-      font-size: 11px;
-      border-radius: 999px;
-      padding: 2px 7px;
-      background: #fee2e2;
-      color: #b91c1c;
-      margin-left: 6px;
-    }
-
-    .badge-safe {
-      display: inline-block;
-      font-size: 11px;
-      border-radius: 999px;
-      padding: 2px 7px;
-      background: #dcfce7;
-      color: #166534;
-      margin-left: 6px;
-    }
-
     .note {
       font-size: 11px;
-      color: #777;
+      color: #6b7280;
       margin-top: 6px;
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <h1>Mô phỏng Fridge-tag</h1>
+    <h1>Mô phỏng Fridge-tag 2E</h1>
+    <div class="tag-line">TẬP HUẤN DÂY CHUYỀN LẠNH – CÀI ĐẶT • ĐỌC NHIỆT ĐỘ • XỬ TRÍ BÁO ĐỘNG</div>
     <div class="subtitle">
-      Dùng cho tập huấn dây chuyền lạnh – nhấn nút, thay đổi nhiệt độ, chờ báo động.
+      Chia sẻ màn hình cho học viên: yêu cầu đọc màn hình, mô tả cách xử trí vắc xin, sau đó mới bấm nút <strong>OK</strong>.
     </div>
 
-    <!-- Màn hình "Fridge-tag" -->
-    <div class="display" id="display">
-      <div class="temp-block">
-        <div class="temp-value">
-          <span id="tempValue">5.0</span><span class="temp-unit"> °C</span>
+    <!-- Thiết bị Fridge-tag 2E -->
+    <div class="device" id="device">
+      <!-- Overlay kích hoạt -->
+      <div class="overlay" id="overlay">
+        <div class="overlay-title">Kích hoạt lần đầu (SET + READ)</div>
+        <div class="overlay-text">
+          Fridge-tag 2E đang ở chế độ <strong>sleep</strong>. <br />
+          Nhấn nút bên dưới để mô phỏng nhấn <strong>SET + READ &gt; 3 giây</strong>, sau đó chọn định dạng ngày.
         </div>
-        <div class="time-row">
-          <span>Tổng thời gian: <strong id="totalTime">00:00</strong></span>
+        <div class="overlay-options">
+          <button id="btnActivateDdMm">SET + READ → dd.mm.yyyy</button>
+          <button id="btnActivateMmDd">SET + READ → mm.dd.yyyy</button>
         </div>
-        <div class="time-row">
-          <span>> 8°C: <strong id="highOor">0 phút</strong></span>
-          <span>< 2°C: <strong id="lowOor">0 phút</strong></span>
+        <div class="overlay-text" style="font-size: 11px; color: #9ca3af;">
+          Gợi ý khi dạy: yêu cầu học viên nhắc lại các bước kích hoạt, cài ngày giờ và ghi chú ngày kích hoạt lên mặt sau thiết bị.
         </div>
       </div>
-      <div class="status-block">
-        <div class="status-label">Trạng thái</div>
-        <div class="status-text" id="statusText">
-          Trong ngưỡng an toàn (2 – 8°C)
+
+      <!-- Màn chính (bên trái) -->
+      <div class="device-main">
+        <div class="screen-label">Màn hình</div>
+        <div class="screen-title" id="screenTitle">Màn hình chính – Nhiệt độ hiện tại</div>
+
+        <div class="temp-row">
+          <span class="temp-value" id="tempValue">5.0</span>
+          <span class="temp-unit">°C</span>
         </div>
-        <div class="status-label">Báo động</div>
-        <div class="status-text" id="alarmText">
-          Không có báo động
+
+        <div class="status-bar">
+          <div>
+            <span id="statusChip" class="status-chip status-ok">OK</span>
+          </div>
+          <div style="font-size: 11px; color: #9ca3af;">
+            Ngày: <span id="dateDisplay">--/--/----</span>
+          </div>
         </div>
-        <div class="status-label">Chế độ mô phỏng</div>
-        <div class="status-text">
-          1 giây = <strong>10 phút</strong>
+
+        <div class="time-line">
+          <span>Tổng thời gian chạy: <strong id="totalTime">00:00</strong></span>
+          <span>Chế độ: <strong>1 giây = 10 phút</strong></span>
+        </div>
+        <div class="time-line">
+          <span>&gt; 8°C (cộng dồn): <strong id="highOor">0 phút</strong></span>
+          <span>&lt; 2°C (cộng dồn): <strong id="lowOor">0 phút</strong></span>
+        </div>
+      </div>
+
+      <!-- Bên phải: thông tin chi tiết -->
+      <div class="device-side">
+        <div class="side-section">
+          <div class="side-label">Trạng thái</div>
+          <div class="side-text" id="statusText">
+            Thiết bị đã kích hoạt, đang trong dải an toàn <strong>2–8°C</strong>.
+          </div>
+        </div>
+
+        <div class="side-section">
+          <div class="side-label">
+            Báo động
+            <span class="badge" id="alarmBadge">Không có</span>
+          </div>
+          <div class="side-text" id="alarmText">
+            Không có báo động. <small>Học viên đọc màn hình: “OK, 5.0 °C, nằm trong vùng an toàn”.</small>
+          </div>
+        </div>
+
+        <div class="side-section" id="historyBlock">
+          <div class="side-label">Màn hình READ</div>
+          <div class="side-text" id="historyText">
+            Bấm nút <strong>READ</strong> để lần lượt xem:<br />
+            – Hôm nay: min / max, có alarm không<br />
+            – Ngày -1: min / max, có alarm không<br />
+            – Chi tiết alarm gần nhất (ngày – giờ, thời lượng, loại HIGH/LOW).
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Nút điều khiển giống máy -->
+    <!-- Điều khiển giống thiết bị -->
     <div class="panel">
-      <div class="panel-title">Nút giống trên Fridge-tag</div>
+      <div class="panel-title">Các nút trên Fridge-tag 2E (mô phỏng)</div>
       <div class="panel-desc">
-        Dùng để cho học viên thực hành đọc màn hình và xử trí báo động.
+        Dùng trong Zoom/Meet: mời học viên yêu cầu thao tác (bấm READ bao nhiêu lần, khi nào bấm OK…).
       </div>
       <div class="btn-row">
-        <button class="btn-primary" id="btnStartStop">▶ Bắt đầu mô phỏng</button>
-        <button id="btnReset">⟲ Reset</button>
-        <button id="btnTempUp">▲ Tăng 0,5°C</button>
-        <button id="btnTempDown">▼ Giảm 0,5°C</button>
-        <button class="btn-danger" id="btnOk">OK – Xác nhận báo động</button>
+        <button class="btn-primary" id="btnStartStop">▶ Bắt đầu ghi nhiệt độ</button>
+        <button id="btnRead">READ – Xem màn hình kế tiếp</button>
+        <button id="btnOk" class="btn-warning">OK – Xác nhận báo động</button>
+        <button id="btnReset">⟲ Reset mô phỏng</button>
       </div>
       <div class="note">
-        Gợi ý khi dạy: yêu cầu học viên <strong>ghi lại số đọc</strong>, <strong>thời gian phơi nhiễm</strong>
-        trước khi nhấn nút <strong>OK</strong>.
+        Gợi ý: Nhấn <strong>READ</strong> nhiều lần để chuyển qua: màn chính → “Hôm nay (min/max)” → “Ngày -1” → “Chi tiết alarm”.
+        Học viên phải đọc to được từng màn hình.
       </div>
     </div>
 
-    <!-- Kịch bản mô phỏng -->
+    <!-- Kịch bản sốc nhiệt / sốc lạnh -->
     <div class="grid-2">
       <div class="panel">
         <div class="panel-title">
-          Kịch bản 1: Tăng nhiệt > 8°C
-          <span class="badge-alarm">ALARM > 8°C sau 3 giờ</span>
+          Kịch bản 1 – Tăng nhiệt &gt; 8°C
         </div>
         <div class="panel-desc">
-          Dùng để minh họa tủ lạnh mất lạnh (cửa mở nhiều, mất điện...). Học viên quan sát thời gian
-          phơi nhiễm và quyết định xử trí vắc xin.
+          Mô phỏng tủ lạnh mất lạnh (mở cửa nhiều, mất điện…). Thiết bị sẽ báo <strong>ALARM HIGH</strong> nếu
+          >8°C đủ lâu.
         </div>
         <div class="btn-row">
           <button id="btnScenarioWarm">🔥 Bắt đầu sốc nhiệt (12°C)</button>
+          <button id="btnTempUp">▲ Tăng 0,5°C</button>
+          <button id="btnTempDown">▼ Giảm 0,5°C</button>
         </div>
-        <div class="legend">
-          Ngưỡng mô phỏng:
-          <ul>
-            <li>Giới hạn trên: <strong>8°C</strong></li>
-            <li>Báo động khi > 8°C liên tục ≥ <strong>3 giờ</strong> (180 phút)</li>
-          </ul>
+        <div class="note">
+          Ngưỡng mô phỏng: &gt;8°C liên tục ≥ 3 giờ (180 phút) → ALARM HIGH.
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title">
-          Kịch bản 2: Đông băng < 2°C
-          <span class="badge-alarm">ALARM < 2°C sau 1 giờ</span>
-        </div>
+        <div class="panel-title">Kịch bản 2 – Nguy cơ đông băng &lt; 2°C</div>
         <div class="panel-desc">
-          Mô phỏng tủ lạnh quá lạnh (vắc xin sát dàn lạnh, chỉnh nhiệt độ quá thấp...).
+          Mô phỏng tủ lạnh quá lạnh hoặc vắc xin sát dàn lạnh. Thiết bị sẽ báo <strong>ALARM LOW</strong>
+          nếu &lt;2°C đủ lâu.
         </div>
         <div class="btn-row">
           <button id="btnScenarioCold">❄ Sốc lạnh (-3°C)</button>
         </div>
-        <div class="legend">
-          Ngưỡng mô phỏng:
-          <ul>
-            <li>Giới hạn dưới: <strong>2°C</strong></li>
-            <li>Báo động khi < 2°C liên tục ≥ <strong>1 giờ</strong> (60 phút)</li>
-          </ul>
+        <div class="note">
+          Ngưỡng mô phỏng: &lt;2°C liên tục ≥ 1 giờ (60 phút) → ALARM LOW.
         </div>
       </div>
     </div>
 
     <div class="note">
-      Lưu ý: Đây chỉ là mô phỏng dùng cho tập huấn, <strong>không thay thế thiết bị Fridge-tag thật</strong>.
-      Có thể điều chỉnh ngưỡng và thời gian báo động trong phần JavaScript để phù hợp hướng dẫn quốc gia / hãng sản xuất.
+      Lưu ý: Đây là mô phỏng dùng cho tập huấn, không thay thế thiết bị Fridge-tag 2E thật. Có thể chỉnh ngưỡng,
+      thời gian báo động và thông điệp phù hợp hướng dẫn quốc gia / hãng sản xuất.
     </div>
   </div>
 
   <script>
-    // Tham số mô phỏng
-    const HIGH_LIMIT = 8.0;            // Giới hạn trên
-    const LOW_LIMIT = 2.0;             // Giới hạn dưới
-    const HIGH_ALARM_THRESHOLD = 180;  // phút > 8°C để báo động (3 giờ)
-    const LOW_ALARM_THRESHOLD = 60;    // phút < 2°C để báo động (1 giờ)
-    const MIN_PER_TICK = 10;           // 1 tick (1 giây thật) = 10 phút mô phỏng
+    // ===== Tham số & biến mô phỏng =====
+    const HIGH_LIMIT = 8.0;
+    const LOW_LIMIT = 2.0;
+    const HIGH_ALARM_THRESHOLD = 180; // phút
+    const LOW_ALARM_THRESHOLD = 60;   // phút
+    const MIN_PER_TICK = 10;          // 1s = 10 phút giả lập
+    const MIN_PER_DAY = 1440;         // 24 giờ
+
+    let activated = false;
+    let dateFormat = "dd.mm.yyyy";
+    let simulatedDay = 1;
+    let simulatedMonth = 1;
+    let simulatedYear = 2025;
 
     let currentTemp = 5.0;
     let totalMinutes = 0;
-    let highOorMinutes = 0;  // out-of-range high
-    let lowOorMinutes = 0;   // out-of-range low
+    let highOorMinutes = 0;
+    let lowOorMinutes = 0;
+
+    let todayMinTemp = currentTemp;
+    let todayMaxTemp = currentTemp;
+    let todayHighOorTotal = 0;
+    let todayLowOorTotal = 0;
+
+    let yesterdayMinTemp = null;
+    let yesterdayMaxTemp = null;
+    let yesterdayHighOorTotal = 0;
+    let yesterdayLowOorTotal = 0;
+
     let alarmHigh = false;
     let alarmLow = false;
+
+    let lastAlarmType = null;       // "HIGH" | "LOW"
+    let lastAlarmStartMinutes = 0;  // tính từ lúc thiết bị chạy
+    let lastAlarmDurationMinutes = 0;
+    let lastAlarmAcknowledged = false;
+
     let running = false;
     let intervalId = null;
+    let screenMode = 0; // 0: main, 1: today, 2: yesterday, 3: last alarm
 
-    const tempEl = document.getElementById('tempValue');
-    const totalTimeEl = document.getElementById('totalTime');
-    const highOorEl = document.getElementById('highOor');
-    const lowOorEl = document.getElementById('lowOor');
-    const statusTextEl = document.getElementById('statusText');
-    const alarmTextEl = document.getElementById('alarmText');
-    const displayEl = document.getElementById('display');
-    const btnStartStop = document.getElementById('btnStartStop');
+    // ===== DOM elements =====
+    const overlayEl = document.getElementById("overlay");
+    const tempEl = document.getElementById("tempValue");
+    const totalTimeEl = document.getElementById("totalTime");
+    const highOorEl = document.getElementById("highOor");
+    const lowOorEl = document.getElementById("lowOor");
+    const statusChipEl = document.getElementById("statusChip");
+    const statusTextEl = document.getElementById("statusText");
+    const alarmTextEl = document.getElementById("alarmText");
+    const alarmBadgeEl = document.getElementById("alarmBadge");
+    const screenTitleEl = document.getElementById("screenTitle");
+    const historyTextEl = document.getElementById("historyText");
+    const dateDisplayEl = document.getElementById("dateDisplay");
+    const deviceEl = document.getElementById("device");
 
+    const btnStartStop = document.getElementById("btnStartStop");
+    const btnRead = document.getElementById("btnRead");
+    const btnOk = document.getElementById("btnOk");
+    const btnReset = document.getElementById("btnReset");
+    const btnTempUp = document.getElementById("btnTempUp");
+    const btnTempDown = document.getElementById("btnTempDown");
+    const btnScenarioWarm = document.getElementById("btnScenarioWarm");
+    const btnScenarioCold = document.getElementById("btnScenarioCold");
+    const btnActivateDdMm = document.getElementById("btnActivateDdMm");
+    const btnActivateMmDd = document.getElementById("btnActivateMmDd");
+
+    // ===== Helper =====
+    function pad(num) {
+      return String(num).padStart(2, "0");
+    }
     function formatMinutes(min) {
       const m = Math.floor(min);
       const hh = Math.floor(m / 60);
       const mm = m % 60;
-      const pad = (x) => String(x).padStart(2, '0');
       return `${pad(hh)}:${pad(mm)}`;
+    }
+    function formatDate(d, m, y) {
+      if (dateFormat === "dd.mm.yyyy") {
+        return `${pad(d)}.${pad(m)}.${y}`;
+      } else {
+        return `${pad(m)}.${pad(d)}.${y}`;
+      }
+    }
+
+    function rollDayIfNeeded() {
+      if (totalMinutes > 0 && totalMinutes % MIN_PER_DAY === 0) {
+        // Ngày hôm qua = hôm nay
+        yesterdayMinTemp = todayMinTemp;
+        yesterdayMaxTemp = todayMaxTemp;
+        yesterdayHighOorTotal = todayHighOorTotal;
+        yesterdayLowOorTotal = todayLowOorTotal;
+
+        // Reset hôm nay
+        todayMinTemp = currentTemp;
+        todayMaxTemp = currentTemp;
+        todayHighOorTotal = 0;
+        todayLowOorTotal = 0;
+
+        // Đổi ngày giả lập (rất đơn giản, không cần đúng số ngày từng tháng)
+        simulatedDay += 1;
+        if (simulatedDay > 30) {
+          simulatedDay = 1;
+          simulatedMonth += 1;
+          if (simulatedMonth > 12) {
+            simulatedMonth = 1;
+            simulatedYear += 1;
+          }
+        }
+      }
+    }
+
+    // ===== Cập nhật màn hình theo screenMode =====
+    function updateScreenTexts() {
+      let hasActiveAlarm = alarmHigh || alarmLow;
+
+      // Mặc định: chip & status
+      if (hasActiveAlarm) {
+        statusChipEl.textContent = "ALARM";
+        statusChipEl.className = "status-chip status-alarm";
+        deviceEl.classList.add("beating");
+      } else if (lastAlarmType && lastAlarmAcknowledged) {
+        statusChipEl.textContent = "OK (đã xác nhận alarm)";
+        statusChipEl.className = "status-chip status-muted";
+        deviceEl.classList.remove("beating");
+      } else {
+        statusChipEl.textContent = "OK";
+        statusChipEl.className = "status-chip status-ok";
+        deviceEl.classList.remove("beating");
+      }
+
+      // Nội dung theo từng màn hình READ
+      if (screenMode === 0) {
+        // Màn hình chính
+        screenTitleEl.textContent = "Màn hình chính – Nhiệt độ hiện tại";
+        if (hasActiveAlarm) {
+          if (alarmHigh) {
+            statusTextEl.innerHTML =
+              '<span style="color:#fecaca;">BÁO ĐỘNG: Nhiệt độ cao kéo dài, nằm ngoài dải 2–8°C.</span>';
+          } else {
+            statusTextEl.innerHTML =
+              '<span style="color:#fee2e2;">BÁO ĐỘNG: Nguy cơ đông băng, nhiệt độ dưới 2°C.</span>';
+          }
+        } else {
+          if (currentTemp >= LOW_LIMIT && currentTemp <= HIGH_LIMIT) {
+            statusTextEl.innerHTML =
+              '<span style="color:#bbf7d0;">Trong ngưỡng an toàn 2–8°C.</span>';
+          } else if (currentTemp > HIGH_LIMIT) {
+            statusTextEl.innerHTML =
+              '<span style="color:#fed7aa;">Đang trên 8°C – cần theo dõi và xử trí.</span>';
+          } else {
+            statusTextEl.innerHTML =
+              '<span style="color:#fee2e2;">Đang dưới 2°C – nguy cơ đông băng vắc xin.</span>';
+          }
+        }
+
+        if (hasActiveAlarm) {
+          alarmBadgeEl.textContent = "ALARM";
+          if (alarmHigh) {
+            alarmTextEl.innerHTML =
+              'ALARM HIGH: >8°C đủ lâu.<br><small>Học viên mô tả: cách ly vắc xin, ghi chép, báo cáo, đánh giá sử dụng.</small>';
+          } else {
+            alarmTextEl.innerHTML =
+              'ALARM LOW: <2°C đủ lâu.<br><small>Học viên mô tả: kiểm tra đông băng, đánh giá lại lô vắc xin.</small>';
+          }
+        } else if (lastAlarmType && lastAlarmAcknowledged) {
+          alarmBadgeEl.textContent = "Đã xác nhận";
+          alarmTextEl.innerHTML =
+            "Không có báo động đang hoạt động.<br><small>Vẫn có thể xem chi tiết lần báo động gần nhất bằng nút READ.</small>";
+        } else {
+          alarmBadgeEl.textContent = "Không có";
+          alarmTextEl.textContent =
+            'Không có báo động. Học viên đọc: "OK, nhiệt độ hiện tại ... °C, trong dải an toàn hoặc không".';
+        }
+
+        historyTextEl.innerHTML =
+          "Bấm READ để xem lịch sử:<br>– Hôm nay: min / max, có alarm không<br>– Ngày -1<br>– Chi tiết alarm gần nhất.";
+      } else if (screenMode === 1) {
+        // Hôm nay
+        screenTitleEl.textContent = "Màn hình READ – Hôm nay (Day 0)";
+        let text = `Hôm nay – min: <strong>${todayMinTemp.toFixed(
+          1
+        )}°C</strong>, max: <strong>${todayMaxTemp.toFixed(
+          1
+        )}°C</strong>.`;
+        if (todayHighOorTotal > 0 || todayLowOorTotal > 0) {
+          text += `<br>Có thời gian ngoài ngưỡng: `;
+          if (todayHighOorTotal > 0)
+            text += `&gt;8°C: <strong>${Math.round(
+              todayHighOorTotal
+            )} phút</strong>. `;
+          if (todayLowOorTotal > 0)
+            text += `&lt;2°C: <strong>${Math.round(
+              todayLowOorTotal
+            )} phút</strong>.`;
+        } else {
+          text += "<br>Không có thời gian ngoài dải 2–8°C hôm nay.";
+        }
+        historyTextEl.innerHTML = text;
+
+        statusTextEl.innerHTML =
+          '<span style="color:#e5e7eb;">Màn hình lịch sử – hôm nay. Học viên đọc to min/max và có/không có thời gian ngoài ngưỡng.</span>';
+        alarmBadgeEl.textContent = "READ";
+        alarmTextEl.textContent =
+          "Đây là màn hình lịch sử ngày 0 (hôm nay) – dùng để đánh giá tủ lạnh cả ngày.";
+      } else if (screenMode === 2) {
+        // Ngày -1
+        screenTitleEl.textContent = "Màn hình READ – Ngày -1";
+        if (yesterdayMinTemp === null) {
+          historyTextEl.innerHTML =
+            "Chưa có dữ liệu ngày -1 (thiết bị chưa chạy đủ 24 giờ).";
+        } else {
+          let text = `Ngày -1 – min: <strong>${yesterdayMinTemp.toFixed(
+            1
+          )}°C</strong>, max: <strong>${yesterdayMaxTemp.toFixed(
+            1
+          )}°C</strong>.`;
+          if (yesterdayHighOorTotal > 0 || yesterdayLowOorTotal > 0) {
+            text += `<br>Có thời gian ngoài ngưỡng: `;
+            if (yesterdayHighOorTotal > 0)
+              text += `&gt;8°C: <strong>${Math.round(
+                yesterdayHighOorTotal
+              )} phút</strong>. `;
+            if (yesterdayLowOorTotal > 0)
+              text += `&lt;2°C: <strong>${Math.round(
+                yesterdayLowOorTotal
+              )} phút</strong>.`;
+          } else {
+            text += "<br>Không có thời gian ngoài dải 2–8°C ngày -1.";
+          }
+          historyTextEl.innerHTML = text;
+        }
+        statusTextEl.innerHTML =
+          '<span style="color:#e5e7eb;">Màn hình lịch sử – ngày -1. Học viên mô tả ổn định/không ổn định của tủ lạnh.</span>';
+        alarmBadgeEl.textContent = "READ";
+        alarmTextEl.textContent =
+          "Dùng để kiểm tra lại hoạt động tủ lạnh của ngày liền trước.";
+      } else if (screenMode === 3) {
+        // Chi tiết alarm
+        screenTitleEl.textContent = "Màn hình READ – Chi tiết alarm gần nhất";
+        if (!lastAlarmType) {
+          historyTextEl.innerHTML =
+            "Chưa từng có lần báo động nào được ghi nhận trong mô phỏng này.";
+          alarmBadgeEl.textContent = "Không có";
+          alarmTextEl.textContent =
+            "Không có thông tin về alarm. Nếu tạo sốc nhiệt/sốc lạnh đủ lâu, sẽ có lần báo động đầu tiên để xem.";
+        } else {
+          const startTimeStr = formatMinutes(lastAlarmStartMinutes);
+          const durationStr = Math.round(lastAlarmDurationMinutes);
+          const typeText =
+            lastAlarmType === "HIGH" ? "ALARM HIGH (>8°C)" : "ALARM LOW (<2°C)";
+          historyTextEl.innerHTML =
+            `Loại: <strong>${typeText}</strong><br>` +
+            `Thời điểm bắt đầu vượt ngưỡng (giả lập): <strong>${startTimeStr}</strong> (kể từ khi chạy).<br>` +
+            `Thời lượng ngoài ngưỡng dùng để kích hoạt alarm: <strong>${durationStr} phút</strong>.<br>` +
+            `<small>Học viên thảo luận: với thời gian phơi nhiễm như vậy, vắc xin có được phép tiếp tục sử dụng không theo hướng dẫn quốc gia?</small>`;
+          alarmBadgeEl.textContent = lastAlarmAcknowledged
+            ? "Alarm đã xác nhận"
+            : "Alarm gần nhất";
+          alarmTextEl.textContent =
+            "Màn hình này mô phỏng các thông tin alarm mà Fridge-tag 2E hiển thị để quyết định xử trí lô vắc xin.";
+        }
+        statusTextEl.innerHTML =
+          '<span style="color:#e5e7eb;">Màn hình chi tiết alarm gần nhất – dùng để hướng dẫn cách đọc và ghi chép.</span>';
+      }
     }
 
     function updateDisplay() {
@@ -348,78 +694,78 @@
       totalTimeEl.textContent = formatMinutes(totalMinutes);
       highOorEl.textContent = `${Math.round(highOorMinutes)} phút`;
       lowOorEl.textContent = `${Math.round(lowOorMinutes)} phút`;
-
-      // Trạng thái chung
-      if (alarmHigh || alarmLow) {
-        statusTextEl.innerHTML =
-          alarmHigh
-            ? `<span class="alarm">BÁO ĐỘNG: Nhiệt độ cao kéo dài</span>`
-            : `<span class="alarm">BÁO ĐỘNG: Nguy cơ đông băng</span>`;
-        displayEl.style.boxShadow = '0 0 18px rgba(239,68,68,0.8)';
-      } else {
-        if (currentTemp >= LOW_LIMIT && currentTemp <= HIGH_LIMIT) {
-          statusTextEl.innerHTML =
-            `<span class="ok-status">Trong ngưỡng an toàn (2 – 8°C)</span>`;
-        } else if (currentTemp > HIGH_LIMIT) {
-          statusTextEl.innerHTML =
-            `<span class="alarm">Đang trên 8°C – theo dõi sát</span>`;
-        } else {
-          statusTextEl.innerHTML =
-            `<span class="alarm">Đang dưới 2°C – nguy cơ đông băng</span>`;
-        }
-        displayEl.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
-      }
-
-      // Nội dung alarm chi tiết
-      if (alarmHigh) {
-        alarmTextEl.innerHTML =
-          `ALARM HIGH: > 8°C liên tục ≥ 3 giờ<br><span style="color:#aaa;font-size:11px;">Thực hành: cách ly vắc xin, ghi nhận, báo cáo, đánh giá sử dụng tiếp.</span>`;
-      } else if (alarmLow) {
-        alarmTextEl.innerHTML =
-          `ALARM LOW: < 2°C liên tục ≥ 1 giờ<br><span style="color:#aaa;font-size:11px;">Thực hành: kiểm tra nguy cơ đông băng, xử trí theo hướng dẫn.</span>`;
-      } else {
-        alarmTextEl.textContent = 'Không có báo động';
-      }
+      dateDisplayEl.textContent = formatDate(
+        simulatedDay,
+        simulatedMonth,
+        simulatedYear
+      );
+      updateScreenTexts();
     }
 
+    // ===== Tick mô phỏng =====
     function tick() {
-      // Mỗi tick cộng 10 phút
+      if (!activated) return;
       totalMinutes += MIN_PER_TICK;
+
+      // Cập nhật today min/max
+      todayMinTemp = Math.min(todayMinTemp, currentTemp);
+      todayMaxTemp = Math.max(todayMaxTemp, currentTemp);
 
       // Theo dõi phơi nhiễm
       if (currentTemp > HIGH_LIMIT) {
         highOorMinutes += MIN_PER_TICK;
+        todayHighOorTotal += MIN_PER_TICK;
+        lowOorMinutes = 0;
+      } else if (currentTemp < LOW_LIMIT) {
+        lowOorMinutes += MIN_PER_TICK;
+        todayLowOorTotal += MIN_PER_TICK;
+        highOorMinutes = 0;
       } else {
         highOorMinutes = 0;
-      }
-
-      if (currentTemp < LOW_LIMIT) {
-        lowOorMinutes += MIN_PER_TICK;
-      } else {
         lowOorMinutes = 0;
       }
 
-      // Kích hoạt báo động nếu đủ thời gian
+      // Kích hoạt alarm HIGH
       if (highOorMinutes >= HIGH_ALARM_THRESHOLD) {
-        alarmHigh = true;
-      }
-      if (lowOorMinutes >= LOW_ALARM_THRESHOLD) {
-        alarmLow = true;
+        if (!alarmHigh) {
+          alarmHigh = true;
+          lastAlarmType = "HIGH";
+          lastAlarmStartMinutes = totalMinutes - highOorMinutes;
+          lastAlarmAcknowledged = false;
+        }
+        lastAlarmDurationMinutes = highOorMinutes;
       }
 
+      // Kích hoạt alarm LOW
+      if (lowOorMinutes >= LOW_ALARM_THRESHOLD) {
+        if (!alarmLow) {
+          alarmLow = true;
+          lastAlarmType = "LOW";
+          lastAlarmStartMinutes = totalMinutes - lowOorMinutes;
+          lastAlarmAcknowledged = false;
+        }
+        lastAlarmDurationMinutes = lowOorMinutes;
+      }
+
+      rollDayIfNeeded();
       updateDisplay();
     }
 
+    // ===== Điều khiển =====
     function start() {
+      if (!activated) {
+        alert("Hãy kích hoạt thiết bị (SET + READ) trước khi bắt đầu.");
+        return;
+      }
       if (running) return;
       running = true;
-      btnStartStop.textContent = '⏸ Tạm dừng';
-      intervalId = setInterval(tick, 1000); // 1 giây thật
+      btnStartStop.textContent = "⏸ Tạm dừng ghi nhiệt độ";
+      intervalId = setInterval(tick, 1000);
     }
 
     function stop() {
       running = false;
-      btnStartStop.textContent = '▶ Tiếp tục mô phỏng';
+      btnStartStop.textContent = "▶ Tiếp tục ghi nhiệt độ";
       if (intervalId) {
         clearInterval(intervalId);
         intervalId = null;
@@ -428,18 +774,43 @@
 
     function resetAll() {
       stop();
+      activated = false;
+      screenMode = 0;
+
       currentTemp = 5.0;
       totalMinutes = 0;
       highOorMinutes = 0;
       lowOorMinutes = 0;
+
+      todayMinTemp = currentTemp;
+      todayMaxTemp = currentTemp;
+      todayHighOorTotal = 0;
+      todayLowOorTotal = 0;
+
+      yesterdayMinTemp = null;
+      yesterdayMaxTemp = null;
+      yesterdayHighOorTotal = 0;
+      yesterdayLowOorTotal = 0;
+
       alarmHigh = false;
       alarmLow = false;
-      btnStartStop.textContent = '▶ Bắt đầu mô phỏng';
+      lastAlarmType = null;
+      lastAlarmStartMinutes = 0;
+      lastAlarmDurationMinutes = 0;
+      lastAlarmAcknowledged = false;
+
+      simulatedDay = 1;
+      simulatedMonth = 1;
+      simulatedYear = 2025;
+
+      btnStartStop.textContent = "▶ Bắt đầu ghi nhiệt độ";
+      overlayEl.style.display = "flex";
+      deviceEl.classList.remove("beating");
       updateDisplay();
     }
 
-    // Gán sự kiện nút
-    btnStartStop.addEventListener('click', () => {
+    // ===== Event listeners =====
+    btnStartStop.addEventListener("click", () => {
       if (running) {
         stop();
       } else {
@@ -447,43 +818,94 @@
       }
     });
 
-    document.getElementById('btnReset').addEventListener('click', () => {
-      resetAll();
-    });
-
-    document.getElementById('btnTempUp').addEventListener('click', () => {
-      currentTemp += 0.5;
+    btnRead.addEventListener("click", () => {
+      if (!activated) {
+        alert("Hãy kích hoạt thiết bị (SET + READ) trước.");
+        return;
+      }
+      screenMode = (screenMode + 1) % 4;
       updateDisplay();
     });
 
-    document.getElementById('btnTempDown').addEventListener('click', () => {
-      currentTemp -= 0.5;
-      updateDisplay();
-    });
-
-    document.getElementById('btnOk').addEventListener('click', () => {
-      // Giống nhấn OK: xoá trạng thái báo động nhưng KHÔNG xoá nhiệt độ & tổng thời gian
+    btnOk.addEventListener("click", () => {
+      if (!activated) {
+        alert("Thiết bị chưa kích hoạt.");
+        return;
+      }
+      if (!alarmHigh && !alarmLow && !lastAlarmType) {
+        alert(
+          "Chưa có alarm nào trong mô phỏng. Hãy tạo kịch bản sốc nhiệt/sốc lạnh trước."
+        );
+        return;
+      }
+      // Giống nhấn OK: xác nhận alarm, xóa trạng thái alarm đang hoạt động
       alarmHigh = false;
       alarmLow = false;
       highOorMinutes = 0;
       lowOorMinutes = 0;
+      lastAlarmAcknowledged = true;
       updateDisplay();
-      alert('Giả định: Anh/chị đã ghi chép và xử trí, sau đó nhấn OK để xác nhận báo động.');
+      alert(
+        "Giả định: Anh/chị đã ghi chép, cách ly vắc xin, báo cáo… Sau đó mới nhấn OK để xác nhận báo động."
+      );
     });
 
-    // Kịch bản: sốc nhiệt
-    document.getElementById('btnScenarioWarm').addEventListener('click', () => {
+    btnReset.addEventListener("click", () => {
+      resetAll();
+    });
+
+    btnTempUp.addEventListener("click", () => {
+      currentTemp += 0.5;
+      updateDisplay();
+    });
+
+    btnTempDown.addEventListener("click", () => {
+      currentTemp -= 0.5;
+      updateDisplay();
+    });
+
+    btnScenarioWarm.addEventListener("click", () => {
+      if (!activated) {
+        alert("Hãy kích hoạt thiết bị (SET + READ) trước.");
+        return;
+      }
       currentTemp = 12.0;
       updateDisplay();
     });
 
-    // Kịch bản: sốc lạnh
-    document.getElementById('btnScenarioCold').addEventListener('click', () => {
+    btnScenarioCold.addEventListener("click", () => {
+      if (!activated) {
+        alert("Hãy kích hoạt thiết bị (SET + READ) trước.");
+        return;
+      }
       currentTemp = -3.0;
       updateDisplay();
     });
 
-    // Khởi tạo hiển thị
+    // Kích hoạt mô phỏng SET+READ và chọn format ngày
+    function activate(format) {
+      dateFormat = format;
+      activated = true;
+      overlayEl.style.display = "none";
+      simulatedDay = 1;
+      simulatedMonth = 1;
+      simulatedYear = 2025;
+      totalMinutes = 0;
+      todayMinTemp = currentTemp;
+      todayMaxTemp = currentTemp;
+      todayHighOorTotal = 0;
+      todayLowOorTotal = 0;
+      updateDisplay();
+    }
+
+    btnActivateDdMm.addEventListener("click", () => {
+      activate("dd.mm.yyyy");
+    });
+    btnActivateMmDd.addEventListener("click", () => {
+      activate("mm.dd.yyyy");
+    });
+
+    // Khởi tạo
     updateDisplay();
   </script>
 </body>
